@@ -14,7 +14,7 @@ public class StepCounter extends AppCompatActivity implements SensorEventListene
     private double sumM=0;
     private double maxMagnitude;
     private double minMagnitude;
-    private Integer stepcounter=0;
+    private static Integer stepcounter=0;
 
 
 
