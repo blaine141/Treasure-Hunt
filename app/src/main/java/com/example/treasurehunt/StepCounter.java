@@ -1,11 +1,11 @@
 package com.example.treasurehunt;
 
-import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
 import android.hardware.Sensor;
 import android.hardware.SensorManager;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
+import android.os.Bundle;
 
 public class StepCounter extends AppCompatActivity implements SensorEventListener {
     private Sensor sensor;
