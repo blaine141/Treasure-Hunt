@@ -19,6 +19,7 @@ public class MainActivity extends AppCompatActivity {
                 System.out.println("Caches have been loaded!");
             }
         });
+
     }
 
 }
