@@ -1,10 +1,18 @@
 package com.example.treasurehunt;
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import android.content.Context;
 import android.view.View;
 import android.content.Intent;
 import android.os.Bundle;
-import android.widget.TextView;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 public class HuntingActivity extends AppCompatActivity {
 
@@ -13,50 +21,51 @@ public class HuntingActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_hunting);
 
-        //Place code that will read from cache list and display 5 nearby caches
-        TextView textView = (TextView) findViewById(R.id.textView2);
-        textView.setText("CACHE1");
+        final Context thisContext = this;
 
-        TextView textView1 = (TextView) findViewById(R.id.textView3);
-        textView1.setText("CACHE2");
+        final ListView listview = (ListView) findViewById(R.id.listview);
+        final ArrayList<String> names = new ArrayList<>();
+        final CacheArrayAdapter adapter = new CacheArrayAdapter(this,
+                android.R.layout.simple_list_item_1, names);
+        listview.setAdapter(adapter);
 
-        TextView textView2 = (TextView) findViewById(R.id.textView4);
-        textView2.setText("CACHE3");
+        Cache.getCaches(this, 39.832, -83.983, 10, new CacheListener() {
+            @Override
+            public void cachesLoaded(final ArrayList<Cache> caches) {
+                for (int i = 0; i < caches.size(); ++i)
+                    names.add(caches.get(i).name);
+                adapter.notifyDataSetChanged();
 
-        TextView textView3 = (TextView) findViewById(R.id.textView5);
-        textView3.setText("CACHE4");
-
-        TextView textView4 = (TextView) findViewById(R.id.textView6);
-        textView4.setText("CACHE5");
+                listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(AdapterView<?> parent, final View view,
+                                            int position, long id) {
+                        Intent intent = new Intent(thisContext, DirectionsActivity.class);
+                        intent.putExtra("cache", caches.get(position));
+                        startActivity(intent);
+                    }
+                });
+                }
+        });
     }
 
-    public void huntOneSelect(View view) {
-        Intent intent = new Intent(this, DirectionsActivity.class);
-        intent.putExtra("arrayNumber", 1);
-        startActivity(intent);
-    }
+    private static class CacheArrayAdapter extends ArrayAdapter<String> {
 
-    public void huntTwoSelect(View view) {
-        Intent intent = new Intent(this, DirectionsActivity.class);
-        intent.putExtra("arrayNumber", 2);
-        startActivity(intent);
-    }
 
-    public void huntThreeSelect(View view) {
-        Intent intent = new Intent(this, DirectionsActivity.class);
-        intent.putExtra("arrayNumber", 3);
-        startActivity(intent);
-    }
+        public CacheArrayAdapter(Context context, int textViewResourceId,
+                                 List<String> objects) {
+            super(context, textViewResourceId, objects);
+        }
 
-    public void huntFourSelect(View view) {
-        Intent intent = new Intent(this, DirectionsActivity.class);
-        intent.putExtra("arrayNumber", 4);
-        startActivity(intent);
-    }
+        @Override
+        public long getItemId(int position) {
+            return position;
+        }
 
-    public void huntFiveSelect(View view){
-        Intent intent = new Intent(this, DirectionsActivity.class);
-        intent.putExtra("arrayNumber", 5);
-        startActivity(intent);
+        @Override
+        public boolean hasStableIds() {
+            return true;
+        }
+
     }
 }
