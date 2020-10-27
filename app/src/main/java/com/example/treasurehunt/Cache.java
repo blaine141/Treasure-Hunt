@@ -13,28 +13,29 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 
 interface CacheListener {
-    public void cachesLoaded(ArrayList<Cache> caches);
+    void cachesLoaded(ArrayList<Cache> caches);
 }
 
-public class Cache {
+public class Cache implements Serializable {
     public static final String BASE_URL = "https://www.opencaching.us/okapi/services/";
     public static final String CONSUMER_KEY = "7Q7WcQ9QECgUYgwX5AGH";
 
     public String name;
     public String code;
-    public float lat;
-    public float lng;
+    public double lat;
+    public double lng;
     public String type;
     public String status;
-    public float distance;              // Distance in meters
-    public float bearing;
-    public float terrain;               // Terrain rating from 1-5
-    public float difficulty;            // Difficulty rating from 1-5
-    public Float rating;                // Rating from 1-5. Can be Null
+    public double distance;              // Distance in meters
+    public double bearing;
+    public double terrain;               // Terrain rating from 1-5
+    public double difficulty;            // Difficulty rating from 1-5
+    public Double rating;                // Rating from 1-5. Can be Null
     public String shortDescription;     // Short description
     public String description;          // Long description with HTML
     public ArrayList<CacheImage> images = new ArrayList<>();
@@ -48,13 +49,13 @@ public class Cache {
             String location = cacheInfo.getString("location");
             String latStr = location.split("\\|")[0];
             String lngStr = location.split("\\|")[1];
-            this.lat = Float.parseFloat(latStr);
-            this.lng = Float.parseFloat(lngStr);
-            this.distance = Float.parseFloat(cacheInfo.getString("distance"));
-            this.bearing = Float.parseFloat(cacheInfo.getString("bearing"));
-            this.terrain = Float.parseFloat(cacheInfo.getString("terrain"));
-            this.difficulty = Float.parseFloat(cacheInfo.getString("difficulty"));
-            this.rating = parseFloat(cacheInfo.getString("rating"));
+            this.lat = Double.parseDouble(latStr);
+            this.lng = Double.parseDouble(lngStr);
+            this.distance = Double.parseDouble(cacheInfo.getString("distance"));
+            this.bearing = Double.parseDouble(cacheInfo.getString("bearing"));
+            this.terrain = Double.parseDouble(cacheInfo.getString("terrain"));
+            this.difficulty = Double.parseDouble(cacheInfo.getString("difficulty"));
+            this.rating = parseDouble(cacheInfo.getString("rating"));
             this.shortDescription = cacheInfo.getString("short_description");
             this.description = cacheInfo.getString("description");
             JSONArray imageArray = cacheInfo.getJSONArray("images");
@@ -67,13 +68,13 @@ public class Cache {
         }
     }
 
-    public static Float parseFloat(String s) {
+    public static Double parseDouble(String s) {
         if (s.equals("null"))
             return null;
-        return Float.parseFloat(s);
+        return Double.parseDouble(s);
     }
 
-    public static void getCaches(final Context context, final float lat, final float lon, final int numCaches, final CacheListener callback) {
+    public static void getCaches(final Context context, final double lat, final double lon, final int numCaches, final CacheListener callback) {
         RequestQueue queue = Volley.newRequestQueue(context);
         String url = BASE_URL + "caches/search/nearest?consumer_key=" + CONSUMER_KEY + "&center=" + lat + "|" + lon + "&limit=" + numCaches + "&type=Traditional";
 
@@ -148,7 +149,7 @@ public class Cache {
         return result;
     }
 
-    public class CacheImage {
+    public static class CacheImage implements Serializable{
         public String uuid;
         public String url;
         public String thumbUrl;
