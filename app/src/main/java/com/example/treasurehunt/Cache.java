@@ -13,7 +13,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Iterator;
 
@@ -22,8 +21,8 @@ interface CacheListener {
 }
 
 public class Cache {
-    public static String BASE_URL = "https://www.opencaching.us/okapi/services/";
-    public static String CONSUMER_KEY = "7Q7WcQ9QECgUYgwX5AGH";
+    public static final String BASE_URL = "https://www.opencaching.us/okapi/services/";
+    public static final String CONSUMER_KEY = "7Q7WcQ9QECgUYgwX5AGH";
 
     public String name;
     public String code;
@@ -31,6 +30,14 @@ public class Cache {
     public float lng;
     public String type;
     public String status;
+    public float distance;              // Distance in meters
+    public float bearing;
+    public float terrain;               // Terrain rating from 1-5
+    public float difficulty;            // Difficulty rating from 1-5
+    public Float rating;                // Rating from 1-5. Can be Null
+    public String shortDescription;     // Short description
+    public String description;          // Long description with HTML
+    public ArrayList<CacheImage> images = new ArrayList<>();
 
     public Cache(JSONObject cacheInfo) {
         try {
@@ -43,14 +50,32 @@ public class Cache {
             String lngStr = location.split("\\|")[1];
             this.lat = Float.parseFloat(latStr);
             this.lng = Float.parseFloat(lngStr);
+            this.distance = Float.parseFloat(cacheInfo.getString("distance"));
+            this.bearing = Float.parseFloat(cacheInfo.getString("bearing"));
+            this.terrain = Float.parseFloat(cacheInfo.getString("terrain"));
+            this.difficulty = Float.parseFloat(cacheInfo.getString("difficulty"));
+            this.rating = parseFloat(cacheInfo.getString("rating"));
+            this.shortDescription = cacheInfo.getString("short_description");
+            this.description = cacheInfo.getString("description");
+            JSONArray imageArray = cacheInfo.getJSONArray("images");
+            for (int i = 0; i < imageArray.length(); i++) {
+                this.images.add(new CacheImage(imageArray.getJSONObject(i)));
+            }
+
         } catch (JSONException ex) {
             ex.printStackTrace();
         }
     }
 
-    public static void getCaches(final Context context, final float lat, final float lon, final CacheListener callback) {
+    public static Float parseFloat(String s) {
+        if (s.equals("null"))
+            return null;
+        return Float.parseFloat(s);
+    }
+
+    public static void getCaches(final Context context, final float lat, final float lon, final int numCaches, final CacheListener callback) {
         RequestQueue queue = Volley.newRequestQueue(context);
-        String url = BASE_URL + "caches/search/nearest?consumer_key=" + CONSUMER_KEY + "&center=" + lat + "|" + lon;
+        String url = BASE_URL + "caches/search/nearest?consumer_key=" + CONSUMER_KEY + "&center=" + lat + "|" + lon + "&limit=" + numCaches + "&type=Traditional";
 
         // Request a string response from the provided URL.
         StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
@@ -63,7 +88,7 @@ public class Cache {
                             JSONObject obj = new JSONObject(response);
                             JSONArray results = obj.getJSONArray("results");
                             String codes = jsonArrayToString(results, "|");
-                            String url = BASE_URL + "caches/geocaches?consumer_key=" + CONSUMER_KEY + "&cache_codes="+codes+"&my_location=" + lat + "|" + lon;
+                            String url = BASE_URL + "caches/geocaches?consumer_key=" + CONSUMER_KEY + "&cache_codes="+codes+"&my_location=" + lat + "|" + lon + "&fields=code|name|location|type|status|distance|bearing|difficulty|terrain|rating|short_description|description|last_found|images";
 
                             StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
                                     new Response.Listener<String>() {
@@ -121,5 +146,25 @@ public class Cache {
             }
         }
         return result;
+    }
+
+    public class CacheImage {
+        public String uuid;
+        public String url;
+        public String thumbUrl;
+        public String caption;
+        public boolean isSpoiler;
+
+        public CacheImage(JSONObject cacheInfo) {
+            try {
+                this.uuid = cacheInfo.getString("uuid");
+                this.url = cacheInfo.getString("url");
+                this.thumbUrl = cacheInfo.getString("thumb_url");
+                this.caption = cacheInfo.getString("caption");
+                this.isSpoiler = cacheInfo.getBoolean("is_spoiler");
+            } catch (JSONException ex) {
+                ex.printStackTrace();
+            }
+        }
     }
 }
