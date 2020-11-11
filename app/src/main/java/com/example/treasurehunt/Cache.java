@@ -1,6 +1,11 @@
 package com.example.treasurehunt;
 
 import android.content.Context;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
+
+import androidx.annotation.NonNull;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -17,8 +22,8 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-interface CacheListener {
-    void cachesLoaded(ArrayList<Cache> caches);
+interface Consumer<T> {
+    void accept(T t);
 }
 
 public class Cache implements Serializable {
@@ -39,8 +44,13 @@ public class Cache implements Serializable {
     public String shortDescription;     // Short description
     public String description;          // Long description with HTML
     public ArrayList<CacheImage> images = new ArrayList<>();
+    public static LocationListener listener;
 
     public Cache(JSONObject cacheInfo) {
+        updateFields(cacheInfo);
+    }
+
+    public void updateFields(JSONObject cacheInfo) {
         try {
             this.code = cacheInfo.getString("code");
             this.name = cacheInfo.getString("name");
@@ -68,13 +78,58 @@ public class Cache implements Serializable {
         }
     }
 
+    public void refresh(final Context context, final Runnable onReload) {
+        getLocation(context, 5, new Consumer<Location>() {
+            @Override
+            public void accept(Location location) {
+                refresh(context, onReload, location.getLatitude(), location.getLongitude());
+            }
+        });
+    }
+
+    public void refresh(final Context context, final Runnable onReload, double lat, double lon) {
+        RequestQueue queue = Volley.newRequestQueue(context);
+        String url = BASE_URL + "caches/geocache?consumer_key=" + CONSUMER_KEY + "&cache_code="+ code +"&my_location=" + lat + "|" + lon + "&fields=code|name|location|type|status|distance|bearing|difficulty|terrain|rating|short_description|description|last_found|images";
+
+        // Request a string response from the provided URL.
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        // Display the first 500 characters of the response string.
+                        try {
+                            JSONObject obj = new JSONObject(response);
+                            updateFields(obj);
+                            onReload.run();
+
+                        } catch (JSONException ex) {
+                            ex.printStackTrace();
+                        }
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                httpError(error);
+            }
+        });
+    }
+
     public static Double parseDouble(String s) {
         if (s.equals("null"))
             return null;
         return Double.parseDouble(s);
     }
 
-    public static void getCaches(final Context context, final double lat, final double lon, final int numCaches, final CacheListener callback) {
+    public static void getCaches(final Context context, final int numCaches, final Consumer<ArrayList<Cache>> callback) {
+        getLocation(context, 500, new Consumer<Location>() {
+            @Override
+            public void accept(Location location) {
+                getCaches(context, location.getLatitude(), location.getLongitude(), numCaches, callback);
+            }
+        });
+    }
+
+    public static void getCaches(final Context context, final double lat, final double lon, final int numCaches, final Consumer<ArrayList<Cache>> callback) {
         RequestQueue queue = Volley.newRequestQueue(context);
         String url = BASE_URL + "caches/search/nearest?consumer_key=" + CONSUMER_KEY + "&center=" + lat + "|" + lon + "&limit=" + numCaches + "&type=Traditional";
 
@@ -103,7 +158,7 @@ public class Cache implements Serializable {
                                                     Cache cache = new Cache(obj.getJSONObject(key));
                                                     caches.add(cache);
                                                 }
-                                                callback.cachesLoaded(caches);
+                                                callback.accept(caches);
                                             } catch (JSONException ex) {
                                                 ex.printStackTrace();
                                             }
@@ -129,6 +184,32 @@ public class Cache implements Serializable {
 
         // Add the request to the RequestQueue.
         queue.add(stringRequest);
+    }
+
+    public static void getLocation(Context context, final float accuracy, final Consumer<Location> consumer) {
+        final LocationManager locationManager = (LocationManager)context.getSystemService(Context.LOCATION_SERVICE);
+
+        listener = new LocationListener() {
+            @Override
+            public void onLocationChanged(@NonNull Location location) {
+                if (location.getAccuracy() < accuracy) {
+                    locationManager.removeUpdates(this);
+                    consumer.accept(location);
+                }
+            }
+
+            @Override
+            public void onProviderEnabled(@NonNull String provider) { }
+            @Override
+            public void onProviderDisabled(@NonNull String provider) { }
+        };
+
+        try {
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, listener);
+            locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, listener);
+        } catch (SecurityException ex) {
+            System.out.println("Location permission rejected.");
+        }
     }
 
     public static void httpError(VolleyError error) {
