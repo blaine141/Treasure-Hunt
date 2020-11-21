@@ -9,6 +9,9 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.RotateAnimation;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 public class DirectionsActivity extends AppCompatActivity implements SensorEventListener {
@@ -18,6 +21,12 @@ public class DirectionsActivity extends AppCompatActivity implements SensorEvent
 
     // variable for heading text
     TextView heading;
+
+    // variable for holding angle of animation
+    private float currentDegree = 0f;
+
+    //For the eventual image
+    private ImageView image;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,6 +64,23 @@ public class DirectionsActivity extends AppCompatActivity implements SensorEvent
         // get the angle around the z-axis rotated
         float degree = Math.round(event.values[0]);
         heading.setText("Heading: " + Float.toString(degree) + " degrees");
+
+        RotateAnimation ra = new RotateAnimation(
+                currentDegree,
+                -degree,
+                Animation.RELATIVE_TO_SELF, 0.5f,
+                Animation.RELATIVE_TO_SELF,
+                0.5f);
+
+        // how long the animation will take place
+        ra.setDuration(210);
+
+        // set the animation after the end of the reservation status
+        ra.setFillAfter(true);
+
+        // Start the animation
+        image.startAnimation(ra);
+        currentDegree = -degree;
     }
 
     @Override
@@ -71,5 +97,18 @@ public class DirectionsActivity extends AppCompatActivity implements SensorEvent
     public void scorePressed(View view) {
         Intent intent = new Intent(this, ScoreActivity.class);
         startActivity(intent);
+    }
+
+    public void hintPressed(View view) {
+
+        //double bearing = currentCache.bearing;
+        //double distance = currentCache.distance;
+        //int paces = (int)(distance / 0.75);
+
+        String directions = "Directions:\n";
+        //directions += "Walk " + paces + " paces at a heading of " + bearing + "°";
+
+        //TextView textView4 = (TextView) findViewById(R.id.textView7);
+        //textView4.setText(directions);
     }
 }

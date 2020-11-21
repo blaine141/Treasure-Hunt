@@ -17,9 +17,11 @@ public class ScoreActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_score);
 
-        //Write a method that determines the number of paces off the user is and at what heading
-        float paceScore = 14;
+        //CALL REFRESH FUNCTION TO GET THE DISTANCE AND HEADING AWAY FROM THE CACHE
+
+        float paceScore = 15;
         float headingScore = 15;
+
         String finalScore = Float.toString(paceScore) + " paces at a heading of " + Float.toString(headingScore) + " degrees";
 
         TextView textView = (TextView) findViewById(R.id.textView10);
