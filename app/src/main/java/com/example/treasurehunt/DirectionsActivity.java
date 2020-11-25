@@ -26,7 +26,7 @@ public class DirectionsActivity extends AppCompatActivity implements SensorEvent
     private float currentDegree = 0f;
 
     //For the eventual image
-    private ImageView image;
+    ImageView image;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,6 +47,8 @@ public class DirectionsActivity extends AppCompatActivity implements SensorEvent
 
         // TextView that will tell the user what their heading is
         heading = (TextView) findViewById(R.id.textView8);
+
+        image = (ImageView) findViewById(R.id.imageView3);
 
         // initialize your android device sensor capabilities
         mSensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
@@ -98,17 +100,17 @@ public class DirectionsActivity extends AppCompatActivity implements SensorEvent
         Intent intent = new Intent(this, ScoreActivity.class);
         startActivity(intent);
     }
-
-    public void hintPressed(View view) {
-
-        //double bearing = currentCache.bearing;
-        //double distance = currentCache.distance;
-        //int paces = (int)(distance / 0.75);
-
-        String directions = "Directions:\n";
-        //directions += "Walk " + paces + " paces at a heading of " + bearing + "°";
-
-        //TextView textView4 = (TextView) findViewById(R.id.textView7);
-        //textView4.setText(directions);
-    }
+//
+//    public void hintPressed(View view) {
+//
+//        //double bearing = currentCache.bearing;
+//        //double distance = currentCache.distance;
+//        //int paces = (int)(distance / 0.75);
+//
+//        String directions = "Directions:\n";
+//        //directions += "Walk " + paces + " paces at a heading of " + bearing + "°";
+//
+//        //TextView textView4 = (TextView) findViewById(R.id.textView7);
+//        //textView4.setText(directions);
+//    }
 }
