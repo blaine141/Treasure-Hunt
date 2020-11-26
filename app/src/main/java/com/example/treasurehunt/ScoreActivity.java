@@ -14,6 +14,7 @@ public class ScoreActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        int hintsUsed = getIntent().getIntExtra("hintsUsed", -1);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_score);
 
@@ -22,14 +23,19 @@ public class ScoreActivity extends AppCompatActivity {
         float paceScore = 15;
         float headingScore = 15;
 
-        String finalScore = Float.toString(paceScore) + " paces at a heading of " + Float.toString(headingScore) + " degrees";
+        String finalScore = "You were off by " + Integer.toString((int) paceScore) + " paces\nat a heading of " + Integer.toString((int) headingScore) + " degrees\nYou used " + Integer.toString(hintsUsed) + " hints";
 
         TextView textView = (TextView) findViewById(R.id.textView10);
         textView.setText(finalScore);
     }
 
     public void againPressed(View view) {
-        Intent intent = new Intent(this, MainActivity.class);
+        Intent intent = new Intent(this, HuntingActivity.class);
+        startActivity(intent);
+    }
+
+    public void scoreboardPressed(View view){
+        Intent intent = new Intent(this, ScoreboardActivity.class);
         startActivity(intent);
     }
 }

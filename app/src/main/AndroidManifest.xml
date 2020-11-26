@@ -13,7 +13,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".PaceActivity"></activity>
+        <activity android:name=".ScoreboardActivity"></activity>
+        <activity android:name=".PaceActivity" />
         <activity android:name=".ScoreActivity" />
         <activity android:name=".DirectionsActivity" />
         <activity android:name=".HuntingActivity" />

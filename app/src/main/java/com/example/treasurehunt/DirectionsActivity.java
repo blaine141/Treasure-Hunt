@@ -28,6 +28,9 @@ public class DirectionsActivity extends AppCompatActivity implements SensorEvent
     //For the eventual image
     ImageView image;
 
+    //To keep track of the number of hints
+    int hintsUsed = 0;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -98,19 +101,12 @@ public class DirectionsActivity extends AppCompatActivity implements SensorEvent
 
     public void scorePressed(View view) {
         Intent intent = new Intent(this, ScoreActivity.class);
+        intent.putExtra("hintsUsed", hintsUsed);
         startActivity(intent);
     }
-//
-//    public void hintPressed(View view) {
-//
-//        //double bearing = currentCache.bearing;
-//        //double distance = currentCache.distance;
-//        //int paces = (int)(distance / 0.75);
-//
-//        String directions = "Directions:\n";
-//        //directions += "Walk " + paces + " paces at a heading of " + bearing + "°";
-//
-//        //TextView textView4 = (TextView) findViewById(R.id.textView7);
-//        //textView4.setText(directions);
-//    }
+
+    public void hintPressed(View view) {
+        //Update the directions from current location
+        hintsUsed++;
+    }
 }
