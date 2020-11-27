@@ -24,6 +24,9 @@ public class DirectionsActivity extends AppCompatActivity implements SensorEvent
     // device sensor manager
     private SensorManager mSensorManager;
 
+    // Current cache
+    Cache currentCache;
+
     // variable for heading text
     TextView heading;
 
@@ -42,7 +45,8 @@ public class DirectionsActivity extends AppCompatActivity implements SensorEvent
         setContentView(R.layout.activity_directions);
 
         // Here is how we get heading and bearing
-        Cache currentCache = (Cache)getIntent().getSerializableExtra("cache");
+        currentCache = (Cache)getIntent().getSerializableExtra("cache");
+        assert currentCache != null;
         double bearing = currentCache.bearing;
         double distance = currentCache.distance;
         int paces = (int)(distance / 0.75);
@@ -50,13 +54,13 @@ public class DirectionsActivity extends AppCompatActivity implements SensorEvent
         String directions = "Directions:\n";
         directions += "Walk " + paces + " paces at a heading of " + bearing + "°";
 
-        TextView textView4 = (TextView) findViewById(R.id.textView7);
+        TextView textView4 = findViewById(R.id.textView7);
         textView4.setText(directions);
 
         // TextView that will tell the user what their heading is
-        heading = (TextView) findViewById(R.id.textView8);
+        heading = findViewById(R.id.textView8);
 
-        image = (ImageView) findViewById(R.id.imageView3);
+        image = findViewById(R.id.imageView3);
 
         // initialize your android device sensor capabilities
         mSensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
@@ -112,23 +116,22 @@ public class DirectionsActivity extends AppCompatActivity implements SensorEvent
 
     public void hintPressed(View view) {
         final Context thisContext = this;
-        Cache currentCache = (Cache)getIntent().getSerializableExtra("cache");
-        Cache cacheRefresh = currentCache;
-        cacheRefresh.refresh(this, new Runnable() {
+        currentCache.refresh(this, new Runnable() {
             @Override
             public void run() {
+                double bearing = currentCache.bearing;
+                double distance = currentCache.distance;
+                int paces = (int) (distance/.75);
+
+                String directions = "Directions:\n";
+                directions += "Walk " + paces + " paces at a heading of " + bearing + "°";
+
+                TextView textView = findViewById(R.id.textView7);
+                textView.setText(directions);
+
+                hintsUsed++;
             }
         });
-        double bearing = currentCache.bearing;
-        double distance = currentCache.distance;
-        int paces = (int) (distance/.75);
 
-        String directions = "Directions:\n";
-        directions += "Walk " + paces + " paces at a heading of " + bearing + "°";
-
-        TextView textView = (TextView) findViewById(R.id.textView7);
-        textView.setText(directions);
-
-        hintsUsed++;
     }
 }
