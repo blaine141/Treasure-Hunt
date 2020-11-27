@@ -15,11 +15,11 @@ import android.view.animation.RotateAnimation;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 
 public class DirectionsActivity extends AppCompatActivity implements SensorEventListener {
-
-    private Cache cacheRefresh;
 
     // device sensor manager
     private SensorManager mSensorManager;
@@ -112,21 +112,23 @@ public class DirectionsActivity extends AppCompatActivity implements SensorEvent
 
     public void hintPressed(View view) {
         final Context thisContext = this;
+        Cache currentCache = (Cache)getIntent().getSerializableExtra("cache");
+        Cache cacheRefresh = currentCache;
         cacheRefresh.refresh(this, new Runnable() {
             @Override
             public void run() {
-                Cache currentCache = (Cache)getIntent().getSerializableExtra("cache");
-                double bearing = currentCache.bearing;
-                double distance = currentCache.distance;
-                int paces = (int) (distance/.75);
-
-                String directions = "Directions:\n";
-                directions += "Walk " + paces + " paces at a heading of " + bearing + "°";
-
-                TextView textView = (TextView) findViewById(R.id.textView7);
-                textView.setText(directions);
             }
         });
+        double bearing = currentCache.bearing;
+        double distance = currentCache.distance;
+        int paces = (int) (distance/.75);
+
+        String directions = "Directions:\n";
+        directions += "Walk " + paces + " paces at a heading of " + bearing + "°";
+
+        TextView textView = (TextView) findViewById(R.id.textView7);
+        textView.setText(directions);
+
         hintsUsed++;
     }
 }
