@@ -2,6 +2,7 @@ package com.example.treasurehunt;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Context;
 import android.content.Intent;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
@@ -14,7 +15,11 @@ import android.view.animation.RotateAnimation;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.util.ArrayList;
+
 public class DirectionsActivity extends AppCompatActivity implements SensorEventListener {
+
+    private Cache cacheRefresh;
 
     // device sensor manager
     private SensorManager mSensorManager;
@@ -106,7 +111,22 @@ public class DirectionsActivity extends AppCompatActivity implements SensorEvent
     }
 
     public void hintPressed(View view) {
-        //Update the directions from current location
+        final Context thisContext = this;
+        cacheRefresh.refresh(this, new Runnable() {
+            @Override
+            public void run() {
+                Cache currentCache = (Cache)getIntent().getSerializableExtra("cache");
+                double bearing = currentCache.bearing;
+                double distance = currentCache.distance;
+                int paces = (int) (distance/.75);
+
+                String directions = "Directions:\n";
+                directions += "Walk " + paces + " paces at a heading of " + bearing + "°";
+
+                TextView textView = (TextView) findViewById(R.id.textView7);
+                textView.setText(directions);
+            }
+        });
         hintsUsed++;
     }
 }
