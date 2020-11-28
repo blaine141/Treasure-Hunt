@@ -2,6 +2,7 @@ package com.example.treasurehunt;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.hardware.Sensor;
@@ -39,8 +40,10 @@ public class DirectionsActivity extends AppCompatActivity implements SensorEvent
     //For the eventual image
     ImageView image;
 
-    //To keep track of the number of hints
+    //To keep track of score
     int hintsUsed = 0;
+    double startDistance;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,6 +55,7 @@ public class DirectionsActivity extends AppCompatActivity implements SensorEvent
         assert currentCache != null;
         double bearing = currentCache.bearing;
         double distance = currentCache.distance;
+        startDistance = currentCache.distance;
         int paces = (int)(distance / StepService.getStepLength());
 
         String directions = "Directions:\n";
@@ -59,6 +63,9 @@ public class DirectionsActivity extends AppCompatActivity implements SensorEvent
 
         TextView textView4 = findViewById(R.id.textView7);
         textView4.setText(directions);
+
+        TextView title = findViewById(R.id.titleTextView);
+        title.setText(currentCache.name);
 
         // TextView that will tell the user what their heading is
         heading = findViewById(R.id.textView8);
@@ -76,15 +83,23 @@ public class DirectionsActivity extends AppCompatActivity implements SensorEvent
                 SensorManager.SENSOR_DELAY_GAME);
     }
 
+    public Float lpf = null;
+    public final float alpha = 0.9f;
     @Override
     public void onSensorChanged(SensorEvent event) {
         // get the angle around the z-axis rotated
-        float degree = Math.round(event.values[0]);
-        heading.setText("Heading: " + Float.toString(degree) + " degrees");
+        float currentReading = -event.values[0];
+        if (lpf == null) {
+            lpf = currentReading;
+        } else {
+            lpf = lpf * alpha + currentReading * (1 - alpha);
+        }
+
+        heading.setText(String.format(getResources().getConfiguration().locale, "Heading: %.1f degrees", lpf));
 
         RotateAnimation ra = new RotateAnimation(
                 currentDegree,
-                -degree,
+                lpf,
                 Animation.RELATIVE_TO_SELF, 0.5f,
                 Animation.RELATIVE_TO_SELF,
                 0.5f);
@@ -97,7 +112,7 @@ public class DirectionsActivity extends AppCompatActivity implements SensorEvent
 
         // Start the animation
         image.startAnimation(ra);
-        currentDegree = -degree;
+        currentDegree = lpf;
     }
 
     @Override
@@ -111,48 +126,47 @@ public class DirectionsActivity extends AppCompatActivity implements SensorEvent
     public void onAccuracyChanged(Sensor sensor, int i) {
     }
 
-    public void scorePressed(View view) {
-        final Context thisContext = this;
+    public ProgressDialog showProgress (String text) {
+        ProgressDialog dialog = new ProgressDialog(this);
+        dialog.setCancelable(true);
+        dialog.setMessage(text);
+        dialog.show();
+        return dialog;
+    }
+
+    public void foundPressed(View v) {
+        score(this,true);
+    }
+
+    public void forfeitPressed(View v) {
         final Context context = this;
-        Handler handler = new Handler(Looper.getMainLooper());
-        handler.post(new Runnable(){
-            @Override
-            public void run() {
-                Toast.makeText(context, "Calculating Your Score, please remain in place.", Toast.LENGTH_LONG).show();
-            }
-        });
+        final ProgressDialog dialog = showProgress("Calculating your score...");
         currentCache.refresh(this, new Runnable() {
             @Override
             public void run() {
-                Handler handler = new Handler(Looper.getMainLooper());
-                handler.post(new Runnable(){
-                    @Override
-                    public void run() {
-                        Toast.makeText(context, "Score Calculated!", Toast.LENGTH_SHORT).show();
-                    }
-                });
-                Intent intent = new Intent(thisContext, ScoreActivity.class);
-                intent.putExtra("hintsUsed", hintsUsed);
-                intent.putExtra("cache", currentCache);
-                startActivity(intent);
+                dialog.cancel();
+                score(context,false);
             }
         });
+    }
+
+
+
+    public void score(Context context, boolean found) {
+        Score score = new Score(found, startDistance, currentCache, hintsUsed);
+        Intent intent = new Intent(context, ScoreActivity.class);
+        intent.putExtra("score", score);
+        startActivity(intent);
     }
 
     public void hintPressed(View view) {
 
         final Context context = this;
-        Handler handler = new Handler(Looper.getMainLooper());
-        handler.post(new Runnable(){
-            @Override
-            public void run() {
-                Toast.makeText(context, "Calculating Hint, please remain in place.", Toast.LENGTH_LONG).show();
-            }
-        });
+        final ProgressDialog dialog = showProgress("Processing hint...");
         currentCache.refresh(this, new Runnable() {
             @Override
             public void run() {
-                Handler handler = new Handler(Looper.getMainLooper());
+                dialog.cancel();
                 double bearing = currentCache.bearing;
                 double distance = currentCache.distance;
                 int paces = (int) (distance/.75);
@@ -162,13 +176,6 @@ public class DirectionsActivity extends AppCompatActivity implements SensorEvent
 
                 TextView textView = findViewById(R.id.textView7);
                 textView.setText(directions);
-
-                handler.post(new Runnable(){
-                    @Override
-                    public void run() {
-                        Toast.makeText(context, "Hint Calculated! Happy Hunting!", Toast.LENGTH_SHORT).show();
-                    }
-                });
             }
         });
         hintsUsed++;

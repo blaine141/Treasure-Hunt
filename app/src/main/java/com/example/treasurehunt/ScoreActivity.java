@@ -14,28 +14,23 @@ import com.example.treasurehunt.R;
 public class ScoreActivity extends AppCompatActivity {
 
     Cache currentCache;
+    Score score;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        final Context thisContext = this;
-        currentCache = (Cache)getIntent().getSerializableExtra("cache");
-        int hintsUsed = getIntent().getIntExtra("hintsUsed", -1);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_score);
-        currentCache.refresh(this, new Runnable() {
-            @Override
-            public void run() {
-            }
-        });
-        displayScore(hintsUsed);
+
+        final Context thisContext = this;
+        score = (Score)getIntent().getSerializableExtra("score");
+        assert score != null;
+        currentCache = score.cache;
+        displayScore();
     }
 
-    public void displayScore(int hintsUsed) {
-        double headingScore = currentCache.bearing;
-        double paceScore = currentCache.distance;
-        int paces = (int) (paceScore/.75);
-        String finalScore = "You were off by " + Integer.toString(paces) + " paces\nat a heading of " + Integer.toString((int) headingScore) + " degrees\nYou used " + Integer.toString(hintsUsed) + " hint(s)";
-        TextView textView = (TextView) findViewById(R.id.textView10);
+    public void displayScore() {
+        String finalScore = String.format(getResources().getConfiguration().locale, "You had an accuracy of %.2f%%. You used %d hint(s)", 100 * score.getAccuracy(), score.hints);
+        TextView textView = findViewById(R.id.textView10);
         textView.setText(finalScore);
     }
 

@@ -31,6 +31,9 @@ public class Cache implements Serializable {
     public static final String BASE_URL = "https://www.opencaching.us/okapi/services/";
     public static final String CONSUMER_KEY = "7Q7WcQ9QECgUYgwX5AGH";
 
+    // How far we were when we started.
+    public double startDistance;
+
     public String name;
     public String code;
     public double lat;

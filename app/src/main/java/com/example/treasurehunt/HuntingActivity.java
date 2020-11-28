@@ -6,6 +6,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import android.Manifest;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.view.View;
@@ -14,6 +15,8 @@ import android.os.Bundle;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,11 +25,14 @@ public class HuntingActivity extends AppCompatActivity {
     private ListView listview;
     private ArrayList<String> names;
     private CacheArrayAdapter adapter;
+    private ProgressDialog dialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_hunting);
+
+        dialog = showProgress("Loading caches...");
 
         listview = findViewById(R.id.listview);
         names = new ArrayList<>();
@@ -54,6 +60,14 @@ public class HuntingActivity extends AppCompatActivity {
         }
     }
 
+    public ProgressDialog showProgress (String text) {
+        ProgressDialog dialog = new ProgressDialog(this);
+        dialog.setCancelable(true);
+        dialog.setMessage(text);
+        dialog.show();
+        return dialog;
+    }
+
     public void startFetchingCaches() {
         final Context thisContext = this;
 
@@ -63,6 +77,8 @@ public class HuntingActivity extends AppCompatActivity {
                 for (int i = 0; i < caches.size(); ++i)
                     names.add(caches.get(i).name);
                 adapter.notifyDataSetChanged();
+
+                dialog.cancel();
 
                 listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                     @Override
