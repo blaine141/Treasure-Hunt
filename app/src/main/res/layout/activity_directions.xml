@@ -12,13 +12,13 @@
         android:id="@+id/textView7"
         android:layout_width="341dp"
         android:layout_height="62dp"
-        android:layout_marginTop="84dp"
+        android:layout_marginTop="75dp"
         android:text="TextView"
         android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+        android:textColor="#000"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:textColor="#000"/>
+        app:layout_constraintTop_toTopOf="parent" />
 
     <Button
         android:id="@+id/button5"
@@ -38,7 +38,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp"
         android:onClick="foundPressed"
-        android:text="Found It"
+        android:text="Found It!"
         app:layout_constraintEnd_toStartOf="@+id/button5"
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
