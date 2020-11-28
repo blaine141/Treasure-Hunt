@@ -33,7 +33,7 @@ public class PaceActivity extends AppCompatActivity{
                 Toast.makeText(this,"Invalid number!", Toast.LENGTH_SHORT).show();
             }else {
                 steplength=Double.parseDouble(df.format(0.45*height/100));
-                StepService.setStepLength(steplength);
+                Step.setStepLength(steplength);
                 Toast.makeText(this,"Calibration succeeded!", Toast.LENGTH_SHORT).show();
             }
         }
