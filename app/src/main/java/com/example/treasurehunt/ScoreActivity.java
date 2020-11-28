@@ -2,6 +2,7 @@ package com.example.treasurehunt;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -12,19 +13,28 @@ import com.example.treasurehunt.R;
 
 public class ScoreActivity extends AppCompatActivity {
 
+    Cache currentCache;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        final Context thisContext = this;
+        currentCache = (Cache)getIntent().getSerializableExtra("cache");
         int hintsUsed = getIntent().getIntExtra("hintsUsed", -1);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_score);
+        currentCache.refresh(this, new Runnable() {
+            @Override
+            public void run() {
+            }
+        });
+        displayScore(hintsUsed);
+    }
 
-        //CALL REFRESH FUNCTION TO GET THE DISTANCE AND HEADING AWAY FROM THE CACHE
-
-        float paceScore = 15;
-        float headingScore = 15;
-
+    public void displayScore(int hintsUsed) {
+        double headingScore = currentCache.bearing;
+        double paceScore = currentCache.distance;
+        int paces = (int) (paceScore/.75);
         String finalScore = "You were off by " + Integer.toString((int) paceScore) + " paces\nat a heading of " + Integer.toString((int) headingScore) + " degrees\nYou used " + Integer.toString(hintsUsed) + " hints";
-
         TextView textView = (TextView) findViewById(R.id.textView10);
         textView.setText(finalScore);
     }

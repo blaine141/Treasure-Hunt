@@ -111,6 +111,7 @@ public class DirectionsActivity extends AppCompatActivity implements SensorEvent
     public void scorePressed(View view) {
         Intent intent = new Intent(this, ScoreActivity.class);
         intent.putExtra("hintsUsed", hintsUsed);
+        intent.putExtra("cache", currentCache);
         startActivity(intent);
     }
 
