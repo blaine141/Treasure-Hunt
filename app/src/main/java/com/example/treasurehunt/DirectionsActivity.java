@@ -154,6 +154,7 @@ public class DirectionsActivity extends AppCompatActivity implements SensorEvent
 
     public void score(Context context, boolean found) {
         Score score = new Score(found, startDistance, currentCache, hintsUsed);
+        Score.saveNewScore(this, score);
         Intent intent = new Intent(context, ScoreActivity.class);
         intent.putExtra("score", score);
         startActivity(intent);

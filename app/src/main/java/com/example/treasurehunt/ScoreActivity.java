@@ -11,6 +11,8 @@ import android.widget.TextView;
 import com.example.treasurehunt.MainActivity;
 import com.example.treasurehunt.R;
 
+import org.w3c.dom.Text;
+
 public class ScoreActivity extends AppCompatActivity {
 
     Cache currentCache;
@@ -21,7 +23,6 @@ public class ScoreActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_score);
 
-        final Context thisContext = this;
         score = (Score)getIntent().getSerializableExtra("score");
         assert score != null;
         currentCache = score.cache;
@@ -29,6 +30,9 @@ public class ScoreActivity extends AppCompatActivity {
     }
 
     public void displayScore() {
+        TextView title = findViewById(R.id.scoreTitleTextView);
+        title.setText(currentCache.name);
+
         String finalScore = String.format(getResources().getConfiguration().locale, "You had an accuracy of %.2f%%. You used %d hint(s)", 100 * score.getAccuracy(), score.hints);
         TextView textView = findViewById(R.id.textView10);
         textView.setText(finalScore);

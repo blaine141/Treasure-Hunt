@@ -4,21 +4,19 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ScoreActivity"
-    android:background="@drawable/score">
+    tools:context=".ScoreActivity">
 
     <TextView
-        android:id="@+id/textView9"
-        android:layout_width="165dp"
+        android:id="@+id/scoreTitleTextView"
+        android:layout_width="0px"
         android:layout_height="37dp"
         android:layout_marginTop="60dp"
-        android:text="Your Score:"
+        android:gravity="center"
         android:textAppearance="@style/TextAppearance.AppCompat.Large"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:textColor="#000"/>
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/textView10"
@@ -29,8 +27,7 @@
         android:textAppearance="@style/TextAppearance.AppCompat.Medium"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView9"
-        android:textColor="#000"/>
+        app:layout_constraintTop_toBottomOf="@+id/scoreTitleTextView" />
 
     <Button
         android:id="@+id/button9"

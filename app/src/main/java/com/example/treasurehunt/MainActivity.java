@@ -25,6 +25,11 @@ public class MainActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
+    public void scoreboardPress(View view) {
+        Intent intent = new Intent(this, ScoreboardActivity.class);
+        startActivity(intent);
+    }
+
     public void pacePress(View view) {
         Intent intent = new Intent(this, PaceActivity.class);
         startActivity(intent);
