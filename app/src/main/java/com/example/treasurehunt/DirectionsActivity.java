@@ -49,7 +49,7 @@ public class DirectionsActivity extends AppCompatActivity implements SensorEvent
         assert currentCache != null;
         double bearing = currentCache.bearing;
         double distance = currentCache.distance;
-        int paces = (int)(distance / 0.75);
+        int paces = (int)(distance / StepService.getStepLength());
 
         String directions = "Directions:\n";
         directions += "Walk " + paces + " paces at a heading of " + bearing + "°";
