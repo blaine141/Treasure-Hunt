@@ -9,11 +9,14 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.RotateAnimation;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.json.JSONObject;
 
@@ -109,17 +112,47 @@ public class DirectionsActivity extends AppCompatActivity implements SensorEvent
     }
 
     public void scorePressed(View view) {
-        Intent intent = new Intent(this, ScoreActivity.class);
-        intent.putExtra("hintsUsed", hintsUsed);
-        intent.putExtra("cache", currentCache);
-        startActivity(intent);
-    }
-
-    public void hintPressed(View view) {
         final Context thisContext = this;
+        final Context context = this;
+        Handler handler = new Handler(Looper.getMainLooper());
+        handler.post(new Runnable(){
+            @Override
+            public void run() {
+                Toast.makeText(context, "Calculating Your Score, please remain in place.", Toast.LENGTH_LONG).show();
+            }
+        });
         currentCache.refresh(this, new Runnable() {
             @Override
             public void run() {
+                Handler handler = new Handler(Looper.getMainLooper());
+                handler.post(new Runnable(){
+                    @Override
+                    public void run() {
+                        Toast.makeText(context, "Score Calculated!", Toast.LENGTH_SHORT).show();
+                    }
+                });
+                Intent intent = new Intent(thisContext, ScoreActivity.class);
+                intent.putExtra("hintsUsed", hintsUsed);
+                intent.putExtra("cache", currentCache);
+                startActivity(intent);
+            }
+        });
+    }
+
+    public void hintPressed(View view) {
+
+        final Context context = this;
+        Handler handler = new Handler(Looper.getMainLooper());
+        handler.post(new Runnable(){
+            @Override
+            public void run() {
+                Toast.makeText(context, "Calculating Hint, please remain in place.", Toast.LENGTH_LONG).show();
+            }
+        });
+        currentCache.refresh(this, new Runnable() {
+            @Override
+            public void run() {
+                Handler handler = new Handler(Looper.getMainLooper());
                 double bearing = currentCache.bearing;
                 double distance = currentCache.distance;
                 int paces = (int) (distance/.75);
@@ -130,9 +163,14 @@ public class DirectionsActivity extends AppCompatActivity implements SensorEvent
                 TextView textView = findViewById(R.id.textView7);
                 textView.setText(directions);
 
-                hintsUsed++;
+                handler.post(new Runnable(){
+                    @Override
+                    public void run() {
+                        Toast.makeText(context, "Hint Calculated! Happy Hunting!", Toast.LENGTH_SHORT).show();
+                    }
+                });
             }
         });
-
+        hintsUsed++;
     }
 }

@@ -34,7 +34,7 @@ public class ScoreActivity extends AppCompatActivity {
         double headingScore = currentCache.bearing;
         double paceScore = currentCache.distance;
         int paces = (int) (paceScore/.75);
-        String finalScore = "You were off by " + Integer.toString((int) paceScore) + " paces\nat a heading of " + Integer.toString((int) headingScore) + " degrees\nYou used " + Integer.toString(hintsUsed) + " hints";
+        String finalScore = "You were off by " + Integer.toString(paces) + " paces\nat a heading of " + Integer.toString((int) headingScore) + " degrees\nYou used " + Integer.toString(hintsUsed) + " hint(s)";
         TextView textView = (TextView) findViewById(R.id.textView10);
         textView.setText(finalScore);
     }
