@@ -56,7 +56,7 @@ public class DirectionsActivity extends AppCompatActivity implements SensorEvent
         double bearing = currentCache.bearing;
         double distance = currentCache.distance;
         startDistance = currentCache.distance;
-        int paces = (int)(distance / StepService.getStepLength());
+        int paces = (int)(distance / PaceService.getPaceLength(this));
 
         String directions = "Directions:\n";
         directions += "Walk " + paces + " paces at a heading of " + bearing + "°";
@@ -88,7 +88,7 @@ public class DirectionsActivity extends AppCompatActivity implements SensorEvent
     @Override
     public void onSensorChanged(SensorEvent event) {
         // get the angle around the z-axis rotated
-        float currentReading = -event.values[0];
+        float currentReading = event.values[0];
         if (lpf == null) {
             lpf = currentReading;
         } else {
@@ -97,12 +97,15 @@ public class DirectionsActivity extends AppCompatActivity implements SensorEvent
 
         heading.setText(String.format(getResources().getConfiguration().locale, "Heading: %.1f degrees", lpf));
 
+        float nextDegree = (((lpf) + 180) % 360) - 180;
+
         RotateAnimation ra = new RotateAnimation(
-                currentDegree,
-                lpf,
+                -currentDegree,
+                -nextDegree,
                 Animation.RELATIVE_TO_SELF, 0.5f,
                 Animation.RELATIVE_TO_SELF,
                 0.5f);
+
 
         // how long the animation will take place
         ra.setDuration(210);
@@ -112,7 +115,7 @@ public class DirectionsActivity extends AppCompatActivity implements SensorEvent
 
         // Start the animation
         image.startAnimation(ra);
-        currentDegree = lpf;
+        currentDegree = nextDegree;
     }
 
     @Override
