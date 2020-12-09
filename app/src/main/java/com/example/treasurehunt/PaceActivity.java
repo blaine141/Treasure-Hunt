@@ -37,7 +37,7 @@ public class PaceActivity extends AppCompatActivity implements SensorEventListen
     private int currentSteps;
     private boolean started = false;
     Handler handler = new Handler(Looper.getMainLooper());
-    private final float LOCATION_ACCURACY = 10;
+    private final float LOCATION_ACCURACY = 5; // In meters
 
     private EditText paceCounter;
     private TextView paceLabel;
@@ -111,6 +111,8 @@ public class PaceActivity extends AppCompatActivity implements SensorEventListen
     private static LocationListener listener;
     public static void getLocation(Context context, final float accuracy, final Consumer<Location> consumer) {
         final LocationManager locationManager = (LocationManager)context.getSystemService(Context.LOCATION_SERVICE);
+
+
 
         listener = new LocationListener() {
             @Override
