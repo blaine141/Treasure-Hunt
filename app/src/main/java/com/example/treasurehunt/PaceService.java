@@ -39,12 +39,12 @@ public class PaceService {
         return null;
     }
 
-    public static void setPaceLength(Context context, Double paceLength) {
+    public static void setPaceLength(Context context, double paceLength) {
         PaceService.paceLength = paceLength;
         SharedPreferences appSharedPrefs = PreferenceManager
                 .getDefaultSharedPreferences(context.getApplicationContext());
         SharedPreferences.Editor editor = appSharedPrefs.edit();
-        editor.putString(KEY_PREFS, paceLength.toString());
+        editor.putString(KEY_PREFS, Double.toString(paceLength));
         editor.apply();
     }
 }

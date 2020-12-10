@@ -54,7 +54,7 @@ public class Cache implements Serializable {
         updateFields(cacheInfo);
     }
 
-    public void updateFields(JSONObject cacheInfo) {
+    private void updateFields(JSONObject cacheInfo) {
         try {
             this.code = cacheInfo.getString("code");
             this.name = cacheInfo.getString("name");
@@ -120,7 +120,7 @@ public class Cache implements Serializable {
         queue.add(stringRequest);
     }
 
-    public static Double parseDouble(String s) {
+    private static Double parseDouble(String s) {
         if (s.equals("null"))
             return null;
         return Double.parseDouble(s);
@@ -192,7 +192,7 @@ public class Cache implements Serializable {
         queue.add(stringRequest);
     }
 
-    public static void getLocation(Context context, final float accuracy, final Consumer<Location> consumer) {
+    private static void getLocation(Context context, final float accuracy, final Consumer<Location> consumer) {
         final LocationManager locationManager = (LocationManager)context.getSystemService(Context.LOCATION_SERVICE);
 
         listener = new LocationListener() {
@@ -220,11 +220,11 @@ public class Cache implements Serializable {
         }
     }
 
-    public static void httpError(VolleyError error) {
+    private static void httpError(VolleyError error) {
         error.printStackTrace();
     }
 
-    public static String jsonArrayToString(JSONArray array, String separator) {
+    private static String jsonArrayToString(JSONArray array, String separator) {
         String result = "";
         for (int i=0; i < array.length(); i++) {
             if (i != 0)
@@ -238,7 +238,7 @@ public class Cache implements Serializable {
         return result;
     }
 
-    public static class CacheImage implements Serializable{
+    private static class CacheImage implements Serializable{
         public String uuid;
         public String url;
         public String thumbUrl;
